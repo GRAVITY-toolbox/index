@@ -17,6 +17,8 @@
             overflow: hidden;
             display: flex;
             justify-content: center;
+            /* タッチ操作の挙動制御を追加 */
+            touch-action: manipulation; 
         }
 
         #app-container {
@@ -243,6 +245,7 @@
             initParticipants(); // 参加人数初期化
             renderBoxList(); // 箱リスト初期描画
             calculateTotal();
+            setupTouchPrevention(); // タッチ制御初期化
         }
 
         function initParticipants() {
@@ -256,6 +259,32 @@
                 option.style.backgroundColor = '#1e293b'; // ダークモード用背景
                 participantSelect.appendChild(option);
             }
+        }
+
+        // --- タッチ拡大防止処理 ---
+        function setupTouchPrevention() {
+            // ダブルタップ拡大の抑制
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function (event) {
+                const now = (new Date()).getTime();
+                if (now - lastTouchEnd <= 300) {
+                    event.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+
+            // ピンチズーム（2本指操作）の抑制
+            document.addEventListener('touchstart', function(event) {
+                if (event.touches.length > 1) {
+                    event.preventDefault();
+                }
+            }, { passive: false });
+
+            document.addEventListener('touchmove', function(event) {
+                if (event.touches.length > 1) {
+                    event.preventDefault();
+                }
+            }, { passive: false });
         }
 
         // --- タブ切り替え ---
