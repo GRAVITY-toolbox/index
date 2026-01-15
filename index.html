@@ -2,22 +2,27 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gravityギフト計算機</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap');
         
+        :root {
+            /* モバイルブラウザのアドレスバー考慮した高さ */
+            --app-height: 100vh;
+        }
+
         body {
             font-family: 'M PLUS Rounded 1c', sans-serif;
             background-color: #0f172a;
             color: #f1f5f9;
-            height: 100vh;
+            height: 100vh; /* Fallback */
+            height: var(--app-height);
             overflow: hidden;
             display: flex;
             justify-content: center;
-            /* タッチ操作の挙動制御を追加 */
             touch-action: manipulation; 
         }
 
@@ -75,24 +80,49 @@
         }
 
         .hidden { display: none !important; }
+
+        /* --- レスポンシブ調整 --- */
+        
+        /* 縦が短い画面（iPhone SEや横持ちなど） */
+        @media (max-height: 667px) {
+            header.responsive-header {
+                padding-top: 1rem !important; /* pt-10 -> pt-4相当に縮小 */
+            }
+            .glass-card {
+                padding: 0.5rem !important; /* カード内の余白を詰める */
+            }
+            /* フッターの余白調整 */
+            .pb-safe {
+                padding-bottom: 0.5rem !important;
+            }
+        }
+
+        /* 横幅が極端に狭い画面（Galaxy Fold 折りたたみ時など） */
+        @media (max-width: 340px) {
+            h1 { font-size: 0.875rem !important; } /* タイトル縮小 */
+            .text-sm { font-size: 0.75rem !important; }
+            .text-xs { font-size: 0.65rem !important; }
+            .w-28 { width: 6rem !important; } /* 入力欄の幅調整 */
+        }
     </style>
 </head>
 <body>
 
     <div id="app-container">
         
-        <!-- ヘッダー: 上部に空間を追加 (pt-10) -->
-        <header class="shrink-0 pt-10 px-4 bg-slate-900/90 backdrop-blur-md z-20">
+        <!-- ヘッダー: クラス responsive-header を追加してCSS制御 -->
+        <header class="responsive-header shrink-0 pt-10 px-4 bg-slate-900/90 backdrop-blur-md z-20 transition-all duration-300">
             <div class="flex justify-between items-center mb-2 h-8">
-                <!-- タイトルエリア修正: 計算機アイコン復活 + 画像を右側に -->
+                <!-- タイトルエリア修正: 画像を左、計算機アイコンを右に配置変更 -->
                 <div class="flex items-center">
-                    <h1 class="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 flex items-center">
-                        <i class="fa-solid fa-calculator text-purple-400 mr-2"></i>Gravity計算機
+                    <!-- 画像 (image_gravity.png) -->
+                    <img src="image_gravity.png" alt="Logo" class="w-6 h-6 mr-2 rounded-full object-cover border border-slate-600/50">
+                    <!-- タイトル + 計算機アイコン -->
+                    <h1 class="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 flex items-center whitespace-nowrap">
+                        Gravity計算機<i class="fa-solid fa-calculator text-purple-400 ml-2"></i>
                     </h1>
-                    <!-- 画像拡張子を png に変更 -->
-                    <img src="image_gravity.png" alt="Logo" class="w-6 h-6 ml-2 rounded-full object-cover border border-slate-600/50">
                 </div>
-                <!-- ギフト計算機タブのみリセットボタンを表示するためのラッパー -->
+                <!-- リセットボタン -->
                 <div id="reset-btn-wrapper">
                     <button onclick="resetAll()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600 px-3 py-1.5 rounded transition-all active:scale-95">
                         <i class="fa-solid fa-rotate-right mr-1"></i>Reset
@@ -122,7 +152,7 @@
                     </div>
                 </div>
                 
-                <!-- 固定フッター (ギフト用) -->
+                <!-- 固定フッター -->
                 <div class="shrink-0 bg-slate-900/95 backdrop-blur-xl border-t border-slate-700/50 z-30 pb-safe absolute bottom-0 w-full">
                     <div class="p-3">
                         <div class="grid grid-cols-2 gap-3">
@@ -162,7 +192,6 @@
                                 class="bg-transparent w-full text-xl font-bold text-white placeholder-slate-600 focus:outline-none"
                                 oninput="calculateBox()">
                         </div>
-                        <!-- 注釈追加 -->
                         <p class="text-[10px] text-slate-500 mt-1">※花摘みは上限50,000PT（ただし1時間上限10,000PT）</p>
                     </div>
 
@@ -180,7 +209,6 @@
                                     <!-- JSで1~10を生成 -->
                                 </select>
                             </div>
-                            <!-- カスタム矢印 -->
                             <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-400">
                                 <i class="fa-solid fa-caret-down"></i>
                             </div>
@@ -199,8 +227,16 @@
     </div>
 
     <script>
+        // --- 画面高さの最適化 (DVH対応) ---
+        const setAppHeight = () => {
+            const doc = document.documentElement;
+            // 実際のウィンドウ高さを取得してCSS変数にセット
+            doc.style.setProperty('--app-height', `${window.innerHeight}px`);
+        }
+        window.addEventListener('resize', setAppHeight);
+        setAppHeight(); // 初期実行
+
         // --- ギフト計算機用データ ---
-        // 指示に従いリストを更新
         const itemsData = [
             { name: "宇宙遊園地", kira: 2590, points: 12950 },
             { name: "虹ユニコーン", kira: 1540, points: 7700 },
@@ -244,10 +280,10 @@
 
         function init() {
             renderItems();
-            initParticipants(); // 参加人数初期化
-            renderBoxList(); // 箱リスト初期描画
+            initParticipants();
+            renderBoxList();
             calculateTotal();
-            setupTouchPrevention(); // タッチ制御初期化
+            setupTouchPrevention();
         }
 
         function initParticipants() {
@@ -257,15 +293,13 @@
                 const option = document.createElement('option');
                 option.value = i;
                 option.text = i + '人';
-                if (i === 10) option.selected = true; // 初期値10
-                option.style.backgroundColor = '#1e293b'; // ダークモード用背景
+                if (i === 10) option.selected = true;
+                option.style.backgroundColor = '#1e293b';
                 participantSelect.appendChild(option);
             }
         }
 
-        // --- タッチ拡大防止処理 ---
         function setupTouchPrevention() {
-            // ダブルタップ拡大の抑制
             let lastTouchEnd = 0;
             document.addEventListener('touchend', function (event) {
                 const now = (new Date()).getTime();
@@ -275,7 +309,6 @@
                 lastTouchEnd = now;
             }, false);
 
-            // ピンチズーム（2本指操作）の抑制
             document.addEventListener('touchstart', function(event) {
                 if (event.touches.length > 1) {
                     event.preventDefault();
@@ -289,7 +322,6 @@
             }, { passive: false });
         }
 
-        // --- タブ切り替え ---
         window.switchTab = function(tabName) {
             const giftTab = document.getElementById('tab-gift');
             const boxTab = document.getElementById('tab-box');
@@ -301,19 +333,16 @@
                 boxTab.classList.add('hidden');
                 giftBtn.classList.add('active');
                 boxBtn.classList.remove('active');
-                // 位置ずれ防止のため visibility で制御
                 resetBtnWrapper.style.visibility = 'visible';
             } else {
                 giftTab.classList.add('hidden');
                 boxTab.classList.remove('hidden');
                 giftBtn.classList.remove('active');
                 boxBtn.classList.add('active');
-                // 位置ずれ防止のため visibility で制御
                 resetBtnWrapper.style.visibility = 'hidden';
             }
         };
 
-        // --- ギフト計算機ロジック ---
         function renderItems() {
             itemListContainer.innerHTML = '';
             itemsData.forEach((item, index) => {
@@ -376,13 +405,11 @@
             calculateTotal();
         }
 
-        // --- 箱開け計算機ロジック ---
         function renderBoxList() {
             boxListContainer.innerHTML = '';
             boxTargets.forEach((item) => {
                 const row = document.createElement('div');
                 row.className = "glass-card p-3 rounded-lg flex items-center justify-between";
-                // 計算結果表示エリア
                 row.innerHTML = `
                     <div class="flex items-center gap-3">
                         <div class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-300">
@@ -398,7 +425,6 @@
                              <div class="text-lg font-bold text-cyan-300 leading-none mb-1" id="box-result-pt-${item.id}">
                                 0
                              </div>
-                             <!-- キラ値表示 -->
                              <div class="flex items-center text-xs text-yellow-200/80 bg-slate-900/40 px-1.5 py-0.5 rounded border border-yellow-500/10">
                                 <i class="fa-solid fa-star text-[9px] mr-1 text-yellow-500"></i>
                                 <span id="box-result-kira-${item.id}">0</span>
@@ -408,7 +434,6 @@
                 `;
                 boxListContainer.appendChild(row);
             });
-            // 初期計算
             calculateBox();
         }
 
@@ -421,10 +446,7 @@
                 const kiraEl = document.getElementById(`box-result-kira-${item.id}`);
                 const kiraContainer = kiraEl.parentElement;
 
-                // 1人あたり必要ポイント = (目標 - 初期) / 人数 (切り上げ)
                 let requiredPt = Math.ceil((item.target - initial) / participants);
-                
-                // キラ値 = 必要ポイント / 5 (切り上げ)
                 let requiredKira = Math.ceil(requiredPt / 5);
                 
                 ptEl.textContent = requiredPt.toLocaleString();
@@ -432,9 +454,9 @@
                 
                 if (requiredPt <= 0) {
                     ptEl.classList.remove('text-cyan-300');
-                    ptEl.classList.add('text-green-400'); // 達成済み
+                    ptEl.classList.add('text-green-400');
                     ptEl.textContent = "達成!";
-                    kiraContainer.classList.add('hidden'); // 達成時はキラ値隠す
+                    kiraContainer.classList.add('hidden');
                 } else {
                     ptEl.classList.add('text-cyan-300');
                     ptEl.classList.remove('text-green-400');
@@ -444,7 +466,6 @@
         }
 
         init();
-
     </script>
 </body>
 </html>
