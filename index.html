@@ -82,9 +82,14 @@
         <!-- ヘッダー: 上部に空間を追加 (pt-6) -->
         <header class="shrink-0 pt-6 px-4 bg-slate-900/90 backdrop-blur-md z-20">
             <div class="flex justify-between items-center mb-2 h-8">
-                <h1 class="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200">
-                    <i class="fa-solid fa-calculator text-purple-400 mr-2"></i>Gravity計算機
-                </h1>
+                <!-- タイトルエリア修正: 計算機アイコン復活 + 画像を右側に -->
+                <div class="flex items-center">
+                    <h1 class="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 flex items-center">
+                        <i class="fa-solid fa-calculator text-purple-400 mr-2"></i>Gravity計算機
+                    </h1>
+                    <!-- 画像拡張子を png に変更 -->
+                    <img src="image_gravity.png" alt="Logo" class="w-6 h-6 ml-2 rounded-full object-cover border border-slate-600/50">
+                </div>
                 <!-- ギフト計算機タブのみリセットボタンを表示するためのラッパー -->
                 <div id="reset-btn-wrapper">
                     <button onclick="resetAll()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600 px-3 py-1.5 rounded transition-all active:scale-95">
