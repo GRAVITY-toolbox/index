@@ -10,7 +10,6 @@
         @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap');
         
         :root {
-            /* モバイルブラウザのアドレスバー考慮した高さ */
             --app-height: 100vh;
         }
 
@@ -18,7 +17,7 @@
             font-family: 'M PLUS Rounded 1c', sans-serif;
             background-color: #0f172a;
             color: #f1f5f9;
-            height: 100vh; /* Fallback */
+            height: 100vh;
             height: var(--app-height);
             overflow: hidden;
             display: flex;
@@ -37,23 +36,12 @@
             box-shadow: 0 0 40px rgba(0,0,0,0.5);
         }
 
-        /* カスタムスクロールバー */
-        ::-webkit-scrollbar {
-            width: 3px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155; 
-            border-radius: 4px;
-        }
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
 
         input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
         .pop { animation: pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes pop {
@@ -68,41 +56,37 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* タブのアクティブスタイル */
         .tab-btn.active {
             background-color: rgba(51, 65, 85, 0.8);
             color: #fff;
-            border-bottom: 2px solid #a78bfa; /* purple-400 */
+            border-bottom: 2px solid #a78bfa;
         }
         .tab-btn {
             color: #94a3b8;
             transition: all 0.3s;
+            font-size: 0.75rem;
         }
 
         .hidden { display: none !important; }
 
-        /* --- レスポンシブ調整 --- */
-        
-        /* 縦が短い画面（iPhone SEや横持ちなど） */
-        @media (max-height: 667px) {
-            header.responsive-header {
-                padding-top: 1rem !important; /* pt-10 -> pt-4相当に縮小 */
-            }
-            .glass-card {
-                padding: 0.5rem !important; /* カード内の余白を詰める */
-            }
-            /* フッターの余白調整 */
-            .pb-safe {
-                padding-bottom: 0.5rem !important;
-            }
-        }
+        /* プログレスバー用 */
+        .progress-bg { background-color: rgba(255, 255, 255, 0.1); }
+        .progress-fill { transition: width 0.3s ease; }
+        .progress-fill.over { background-color: #ef4444; } 
+        .progress-fill.ok { background-color: #4ade80; }
 
-        /* 横幅が極端に狭い画面（Galaxy Fold 折りたたみ時など） */
+        /* レスポンシブ調整 */
+        @media (max-height: 667px) {
+            header.responsive-header { padding-top: 1rem !important; }
+            .glass-card { padding: 0.5rem !important; }
+            .pb-safe { padding-bottom: 0.5rem !important; }
+            /* 小画面での説明文エリアの余白調整 */
+            .info-area { padding-top: 0.5rem !important; padding-bottom: 0 !important; }
+        }
         @media (max-width: 340px) {
-            h1 { font-size: 0.875rem !important; } /* タイトル縮小 */
+            h1 { font-size: 0.875rem !important; }
             .text-sm { font-size: 0.75rem !important; }
-            .text-xs { font-size: 0.65rem !important; }
-            .w-28 { width: 6rem !important; } /* 入力欄の幅調整 */
+            .w-28 { width: 5rem !important; }
         }
     </style>
 </head>
@@ -110,19 +94,14 @@
 
     <div id="app-container">
         
-        <!-- ヘッダー: クラス responsive-header を追加してCSS制御 -->
         <header class="responsive-header shrink-0 pt-10 px-4 bg-slate-900/90 backdrop-blur-md z-20 transition-all duration-300">
             <div class="flex justify-between items-center mb-2 h-8">
-                <!-- タイトルエリア修正: 画像を左、計算機アイコンを右に配置変更 -->
                 <div class="flex items-center">
-                    <!-- 画像 (image_gravity.png) -->
                     <img src="image_gravity.png" alt="Logo" class="w-6 h-6 mr-2 rounded-full object-cover border border-slate-600/50">
-                    <!-- タイトル + 計算機アイコン -->
                     <h1 class="text-base font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 flex items-center whitespace-nowrap">
                         Gravity計算機<i class="fa-solid fa-calculator text-purple-400 ml-2"></i>
                     </h1>
                 </div>
-                <!-- リセットボタン -->
                 <div id="reset-btn-wrapper">
                     <button onclick="resetAll()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600 px-3 py-1.5 rounded transition-all active:scale-95">
                         <i class="fa-solid fa-rotate-right mr-1"></i>Reset
@@ -133,41 +112,37 @@
             <!-- タブ切り替え -->
             <div class="flex text-sm font-bold border-b border-slate-700/50">
                 <button onclick="switchTab('gift')" id="btn-gift" class="tab-btn active flex-1 py-2 text-center rounded-t-lg">
-                    ギフト計算
+                    星粒ギフト
+                </button>
+                <button onclick="switchTab('point')" id="btn-point" class="tab-btn flex-1 py-2 text-center rounded-t-lg">
+                    ポイントギフト
                 </button>
                 <button onclick="switchTab('box')" id="btn-box" class="tab-btn flex-1 py-2 text-center rounded-t-lg">
-                    箱開け計算
+                    箱開け
                 </button>
             </div>
         </header>
 
-        <!-- コンテンツエリア -->
         <div class="flex-1 overflow-hidden relative">
             
-            <!-- タブ1: ギフト計算機 -->
+            <!-- Tab 1: 星粒ギフト計算 -->
             <div id="tab-gift" class="h-full flex flex-col">
                 <div class="flex-1 overflow-y-auto p-3 pb-32">
-                    <div id="item-list" class="space-y-2">
-                        <!-- アイテムリスト生成 -->
-                    </div>
+                    <div id="item-list" class="space-y-2"></div>
                 </div>
-                
-                <!-- 固定フッター -->
                 <div class="shrink-0 bg-slate-900/95 backdrop-blur-xl border-t border-slate-700/50 z-30 pb-safe absolute bottom-0 w-full">
                     <div class="p-3">
                         <div class="grid grid-cols-2 gap-3">
                             <div class="bg-slate-800/80 rounded-lg p-2 px-3 border border-yellow-500/20 flex flex-col justify-center">
                                 <span class="text-yellow-500/70 font-bold text-[10px] uppercase tracking-wider">Total Kira</span>
-                                <div class="flex items-baseline">
-                                    <i class="fa-solid fa-star text-yellow-400 mr-1.5 text-sm"></i>
-                                    <span id="total-kira" class="text-2xl font-bold text-yellow-100">0</span>
-                                </div>
+                                <div class="flex items-baseline"><i class="fa-solid fa-star text-yellow-400 mr-1.5 text-sm"></i><span id="total-kira" class="text-2xl font-bold text-yellow-100">0</span></div>
                             </div>
                             <div class="bg-slate-800/80 rounded-lg p-2 px-3 border border-cyan-500/20 flex flex-col justify-center">
                                 <span class="text-cyan-500/70 font-bold text-[10px] uppercase tracking-wider">Total Points</span>
+                                <!-- 変更点1: PTを前に移動 -->
                                 <div class="flex items-baseline">
+                                    <span class="text-xs text-cyan-500 font-bold mr-1">PT</span>
                                     <span id="total-points" class="text-2xl font-bold text-cyan-100">0</span>
-                                    <span class="text-xs text-cyan-500 font-bold ml-1">pt</span>
                                 </div>
                             </div>
                         </div>
@@ -176,50 +151,104 @@
                 </div>
             </div>
 
-            <!-- タブ2: 箱開け計算機 -->
-            <div id="tab-box" class="h-full flex flex-col hidden overflow-y-auto p-4 pb-10">
+            <!-- Tab 2: ポイントギフト計算 -->
+            <div id="tab-point" class="h-full flex flex-col hidden">
+                <!-- 説明文エリア -->
+                <div class="info-area px-4 pt-3 pb-1 shrink-0">
+                    <div class="text-[10px] text-slate-400 leading-relaxed bg-slate-800/50 p-2 rounded border border-slate-700/50">
+                        <div class="flex items-start gap-1.5">
+                            <i class="fa-solid fa-circle-info text-purple-400 mt-0.5 shrink-0"></i>
+                            <div>
+                                <p>ポイントギフトによるキラ値の1日上限は400、ポイントの1日上限は50,000PT</p>
+                                <p class="text-slate-500 mt-0.5">※ただし、1時間のポイント上限は10,000PT</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-3 pb-48">
+                    <!-- リスト -->
+                    <div id="point-item-list" class="space-y-2 mb-4"></div>
+                    
+                    <!-- 50,000PT達成シミュレーション -->
+                    <div class="glass-card p-3 rounded-xl space-y-3">
+                        <h3 class="text-xs font-bold text-purple-300 border-b border-purple-500/30 pb-1 mb-2 flex items-center">
+                            <i class="fa-solid fa-list-check mr-1.5"></i>在庫振り分けシミュレーション (最大5回)
+                        </h3>
+                        
+                        <!-- 説明 -->
+                        <div class="text-[9px] text-slate-500 mb-2">
+                            ※入力した数量を在庫とし、1回10,000PTを目指して自動で振り分けます。
+                        </div>
+
+                        <!-- 5回リスト -->
+                        <div id="simulation-list" class="space-y-1.5">
+                            <!-- JSで生成 -->
+                            <div class="text-center text-[10px] text-slate-500 py-2">数量(在庫)を入力してください</div>
+                        </div>
+                        
+                        <!-- 合計情報 -->
+                        <div class="mt-2 pt-2 border-t border-slate-700/50 flex justify-between items-center text-[10px]">
+                            <span class="text-slate-400">入力在庫の合計:</span>
+                            <span id="inventory-total-pt" class="text-slate-300 font-mono">PT 0</span>
+                        </div>
+                    </div>
+                </div>
                 
-                <!-- 入力エリア -->
+                <!-- 固定フッター (上限バー付き・有効値表示) -->
+                <div class="shrink-0 bg-slate-900/95 backdrop-blur-xl border-t border-slate-700/50 z-30 pb-safe absolute bottom-0 w-full">
+                    <div class="p-3 space-y-2">
+                        <!-- Kira Bar -->
+                        <div class="relative">
+                            <div class="flex justify-between text-[10px] mb-0.5">
+                                <span class="text-yellow-500/90 font-bold">有効キラ値</span>
+                                <!-- 変更点3: ★を追加 -->
+                                <span class="text-yellow-100 font-bold">★ <span id="pg-valid-kira">0</span> <span class="text-slate-500 text-[9px] font-normal">/ 上限 400</span></span>
+                            </div>
+                            <div class="h-1.5 w-full progress-bg rounded-full overflow-hidden">
+                                <div id="pg-kira-bar" class="h-full bg-yellow-500 progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Point Bar -->
+                        <div class="relative">
+                            <div class="flex justify-between text-[10px] mb-0.5">
+                                <span class="text-cyan-500/90 font-bold">有効ポイント</span>
+                                <!-- 変更点3: PTを追加 -->
+                                <span class="text-cyan-100 font-bold">PT <span id="pg-valid-pt">0</span> <span class="text-slate-500 text-[9px] font-normal">/ 上限 50,000</span></span>
+                            </div>
+                            <div class="h-1.5 w-full progress-bg rounded-full overflow-hidden">
+                                <div id="pg-pt-bar" class="h-full bg-cyan-500 progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-4 w-full"></div>
+                </div>
+            </div>
+
+            <!-- Tab 3: 箱開け計算 -->
+            <div id="tab-box" class="h-full flex flex-col hidden overflow-y-auto p-4 pb-10">
                 <div class="glass-card p-4 rounded-xl mb-4 space-y-4">
-                    <!-- 初期ポイント -->
                     <div>
-                        <label class="block text-slate-400 text-xs font-bold mb-2 uppercase tracking-wide">
-                            初期ポイント
-                        </label>
+                        <label class="block text-slate-400 text-xs font-bold mb-2 uppercase tracking-wide">初期ポイント</label>
                         <div class="flex items-center bg-slate-900/50 border border-slate-600/50 rounded-lg px-3 py-2">
                             <i class="fa-solid fa-coins text-cyan-500 mr-3"></i>
-                            <input type="number" id="initial-points" placeholder="0" value="50000"
-                                class="bg-transparent w-full text-xl font-bold text-white placeholder-slate-600 focus:outline-none"
-                                oninput="calculateBox()">
+                            <input type="number" id="initial-points" placeholder="0" value="50000" class="bg-transparent w-full text-xl font-bold text-white placeholder-slate-600 focus:outline-none" oninput="calculateBox()">
                         </div>
                         <p class="text-[10px] text-slate-500 mt-1">※花摘みは上限50,000PT（ただし1時間上限10,000PT）</p>
                     </div>
-
-                    <!-- 参加人数 -->
                     <div>
-                        <label class="block text-slate-400 text-xs font-bold mb-2 uppercase tracking-wide">
-                            参加人数
-                        </label>
+                        <label class="block text-slate-400 text-xs font-bold mb-2 uppercase tracking-wide">参加人数</label>
                         <div class="relative">
                             <div class="flex items-center bg-slate-900/50 border border-slate-600/50 rounded-lg px-3 py-2">
                                 <i class="fa-solid fa-users text-purple-400 mr-3"></i>
-                                <select id="participant-count" 
-                                    class="bg-transparent w-full text-xl font-bold text-white focus:outline-none appearance-none"
-                                    onchange="calculateBox()">
-                                    <!-- JSで1~10を生成 -->
-                                </select>
+                                <select id="participant-count" class="bg-transparent w-full text-xl font-bold text-white focus:outline-none appearance-none" onchange="calculateBox()"></select>
                             </div>
-                            <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-400">
-                                <i class="fa-solid fa-caret-down"></i>
-                            </div>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-400"><i class="fa-solid fa-caret-down"></i></div>
                         </div>
                     </div>
                 </div>
-
-                <!-- 計算結果リスト -->
-                <div id="box-list" class="space-y-2">
-                    <!-- JSで生成 -->
-                </div>
+                <div id="box-list" class="space-y-2"></div>
             </div>
 
         </div>
@@ -227,17 +256,16 @@
     </div>
 
     <script>
-        // --- 画面高さの最適化 (DVH対応) ---
         const setAppHeight = () => {
             const doc = document.documentElement;
-            // 実際のウィンドウ高さを取得してCSS変数にセット
             doc.style.setProperty('--app-height', `${window.innerHeight}px`);
         }
         window.addEventListener('resize', setAppHeight);
-        setAppHeight(); // 初期実行
+        setAppHeight();
 
-        // --- ギフト計算機用データ ---
-        const itemsData = [
+        // --- データ定義 ---
+        // Tab 1: 星粒ギフト
+        const starGiftData = [
             { name: "宇宙遊園地", kira: 2590, points: 12950 },
             { name: "虹ユニコーン", kira: 1540, points: 7700 },
             { name: "ピクハート", kira: 1000, points: 5000 },
@@ -258,7 +286,15 @@
             { name: "栗ケーキ", kira: 5, points: 25 },
         ];
 
-        // --- 箱開け計算機用データ ---
+        // Tab 2: ポイントギフト
+        const pointGiftData = [
+            { name: "花菖蒲", kira: 474, points: 11850 },
+            { name: "アジサイ", kira: 150, points: 3750 },
+            { name: "バラ", kira: 150, points: 3750 },
+            { name: "ペンライト", kira: 10, points: 250 },
+        ];
+
+        // Tab 3: 箱開け
         const boxTargets = [
             { id: 1, target: 1000 },
             { id: 2, target: 6000 },
@@ -269,21 +305,288 @@
             { id: 7, target: 800000 },
         ];
 
-        // DOM要素
-        const itemListContainer = document.getElementById('item-list');
-        const boxListContainer = document.getElementById('box-list');
-        const totalKiraEl = document.getElementById('total-kira');
-        const totalPointsEl = document.getElementById('total-points');
-        const initialPointsInput = document.getElementById('initial-points');
+        // --- DOM要素 ---
         const resetBtnWrapper = document.getElementById('reset-btn-wrapper');
         const participantSelect = document.getElementById('participant-count');
+        const initialPointsInput = document.getElementById('initial-points');
 
         function init() {
-            renderItems();
+            renderStarGift();
+            renderPointGift();
             initParticipants();
             renderBoxList();
-            calculateTotal();
             setupTouchPrevention();
+        }
+
+        // --- Tab制御 ---
+        window.switchTab = function(tabName) {
+            const tabs = ['gift', 'point', 'box'];
+            
+            tabs.forEach(t => {
+                const content = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`btn-${t}`);
+                if (t === tabName) {
+                    content.classList.remove('hidden');
+                    btn.classList.add('active');
+                } else {
+                    content.classList.add('hidden');
+                    btn.classList.remove('active');
+                }
+            });
+            resetBtnWrapper.style.visibility = (tabName === 'box') ? 'hidden' : 'visible';
+        };
+
+        // --- Tab 1: 星粒ギフト ---
+        function renderStarGift() {
+            const container = document.getElementById('item-list');
+            container.innerHTML = '';
+            starGiftData.forEach((item, index) => {
+                container.appendChild(createItemRow(item, index, 'star'));
+            });
+            calculateStarTotal();
+        }
+
+        // --- Tab 2: ポイントギフト ---
+        function renderPointGift() {
+            const container = document.getElementById('point-item-list');
+            container.innerHTML = '';
+            pointGiftData.forEach((item, index) => {
+                container.appendChild(createItemRow(item, index, 'point'));
+            });
+            calculatePointGiftTotal();
+        }
+
+        function createItemRow(item, index, type) {
+            const row = document.createElement('div');
+            row.className = "glass-card p-3 rounded-xl flex items-center justify-between gap-3 relative group active:bg-slate-800/80 transition-colors";
+            const inputId = `${type === 'star' ? 's' : 'p'}-qty-${index}`;
+            const calcFunc = type === 'star' ? 'calculateStarTotal()' : 'calculatePointGiftTotal()';
+            const changeFunc = `changeQuantity('${type}', ${index},`;
+
+            row.innerHTML = `
+                <div class="flex-1 min-w-0">
+                    <div class="font-bold text-slate-200 text-sm mb-1.5 truncate">${item.name}</div>
+                    <div class="flex items-center gap-3 text-xs text-slate-400 leading-none">
+                        <div class="flex items-center"><i class="fa-solid fa-star text-yellow-500/80 mr-1 text-[10px]"></i><span>${item.kira.toLocaleString()}</span></div>
+                        <div class="w-px h-3 bg-slate-700/50"></div>
+                        <div class="flex items-center"><span class="text-cyan-500/80 font-bold mr-1 text-[10px]">PT</span><span>${item.points.toLocaleString()}</span></div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between bg-slate-900/40 rounded-lg p-1 border border-slate-700/30 w-28 shrink-0">
+                    <button onclick="${changeFunc} -1)" class="w-8 h-8 rounded text-slate-400 hover:text-white hover:bg-slate-700 flex items-center justify-center active:scale-90 transition-transform"><i class="fa-solid fa-minus text-xs"></i></button>
+                    <input type="number" id="${inputId}" value="0" min="0" max="999" class="flex-1 text-center font-bold text-base text-slate-100 bg-transparent focus:outline-none focus:text-cyan-300 p-0" oninput="${calcFunc}" onclick="this.select()">
+                    <button onclick="${changeFunc} 1)" class="w-8 h-8 rounded bg-slate-700/50 text-slate-200 hover:bg-slate-600 hover:text-white flex items-center justify-center active:scale-90 transition-transform border border-slate-600/50"><i class="fa-solid fa-plus text-xs"></i></button>
+                </div>
+            `;
+            return row;
+        }
+
+        window.changeQuantity = function(type, index, change) {
+            const inputId = `${type === 'star' ? 's' : 'p'}-qty-${index}`;
+            const input = document.getElementById(inputId);
+            let val = parseInt(input.value) || 0;
+            val += change;
+            if (val < 0) val = 0;
+            input.value = val;
+            
+            if(type === 'star') calculateStarTotal();
+            else calculatePointGiftTotal();
+            
+            input.classList.remove('pop');
+            void input.offsetWidth;
+            if(change > 0) input.classList.add('pop');
+        };
+
+        // 星粒ギフト計算
+        window.calculateStarTotal = function() {
+            let tk = 0, tp = 0;
+            starGiftData.forEach((item, index) => {
+                const qty = parseInt(document.getElementById(`s-qty-${index}`).value) || 0;
+                tk += item.kira * qty;
+                tp += item.points * qty;
+            });
+            updateText('total-kira', tk);
+            updateText('total-points', tp);
+        };
+
+        // ポイントギフト計算 (在庫振り分けロジック)
+        window.calculatePointGiftTotal = function() {
+            // 1. 在庫の取得
+            let inventory = pointGiftData.map((item, index) => {
+                return {
+                    name: item.name,
+                    points: item.points,
+                    kira: item.kira,
+                    qty: parseInt(document.getElementById(`p-qty-${index}`).value) || 0
+                };
+            });
+
+            // 在庫合計PTの表示
+            let totalInventoryPt = inventory.reduce((sum, item) => sum + (item.points * item.qty), 0);
+            const invTotalEl = document.getElementById('inventory-total-pt');
+            if (invTotalEl) {
+                invTotalEl.textContent = 'PT ' + totalInventoryPt.toLocaleString();
+            }
+
+            const HOURLY_PT_CAP = 10000;
+            const DAILY_PT_CAP = 50000;
+            const DAILY_KIRA_CAP = 400;
+
+            // 2. 5回シミュレーションループ
+            const listContainer = document.getElementById('simulation-list');
+            listContainer.innerHTML = '';
+            
+            let cumulativeValidPt = 0;
+            let cumulativeKira = 0;
+            let roundsCalculated = 0;
+
+            if (totalInventoryPt === 0) {
+                listContainer.innerHTML = '<div class="text-center text-[10px] text-slate-500 py-2">数量(在庫)を入力してください</div>';
+            } else {
+                for (let round = 1; round <= 5; round++) {
+                    let roundPt = 0;
+                    let roundKira = 0;
+                    let roundDetails = [];
+
+                    // 在庫から10000PTを目指して取り出す (高ポイント順 = 配列順)
+                    for (let item of inventory) {
+                        if (item.qty <= 0) continue;
+
+                        // 既に10000PT以上ならこれ以上積まない
+                        if (roundPt >= HOURLY_PT_CAP) break;
+
+                        // 必要な分だけ積む (貪欲法: 上限を超えるまで1個ずつ追加)
+                        while (item.qty > 0) {
+                            // 既に10000PT超えていたらループ抜ける
+                            if (roundPt >= HOURLY_PT_CAP) break;
+
+                            item.qty--;
+                            roundPt += item.points;
+                            roundKira += item.kira;
+
+                            // 記録
+                            let detail = roundDetails.find(d => d.name === item.name);
+                            if (!detail) {
+                                detail = { name: item.name, count: 0 };
+                                roundDetails.push(detail);
+                            }
+                            detail.count++;
+                        }
+                    }
+
+                    if (roundPt === 0) break; // 在庫切れ
+
+                    roundsCalculated++;
+                    
+                    // 有効値計算 (1時間上限適用)
+                    let validPt = Math.min(roundPt, HOURLY_PT_CAP);
+                    cumulativeValidPt += validPt;
+                    cumulativeKira += roundKira;
+
+                    // 表示用HTML生成
+                    const detailText = roundDetails.map(d => `${d.name}×${d.count}`).join(', ');
+                    
+                    const row = document.createElement('div');
+                    row.className = "flex flex-col bg-slate-800/50 px-2 py-1.5 rounded border border-slate-700/50 text-[10px]";
+                    
+                    // 変更点2: シミュレータ内の表示フォーマット調整
+                    row.innerHTML = `
+                        <div class="flex justify-between items-center mb-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-slate-300 font-bold border-l-2 border-purple-400 pl-2">${round}回目</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="text-cyan-300 font-mono">PT ${roundPt.toLocaleString()}</span>
+                                ${roundPt >= HOURLY_PT_CAP ? '<span class="text-green-400 text-[9px] font-bold ml-1">OK</span>' : ''}
+                                <span class="text-slate-500 mx-1">→</span>
+                                <span class="text-green-300 font-bold">PT ${validPt.toLocaleString()}</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-[9px] text-slate-400 pl-4">
+                            <div class="truncate w-full">${detailText}</div>
+                        </div>
+                    `;
+                    listContainer.appendChild(row);
+                }
+            }
+
+            // 4. フッター表示 (5回シミュレーション結果の累積値を表示)
+            // 有効ポイントは50000上限、有効キラは400上限でクリップ
+            const validDailyPt = Math.min(cumulativeValidPt, DAILY_PT_CAP);
+            const validDailyKira = Math.min(cumulativeKira, DAILY_KIRA_CAP);
+
+            updateText('pg-valid-pt', validDailyPt);
+            updateText('pg-valid-kira', validDailyKira);
+            
+            // プログレスバー
+            updateProgress('pg-pt-bar', validDailyPt, DAILY_PT_CAP);
+            updateProgress('pg-kira-bar', validDailyKira, DAILY_KIRA_CAP);
+        };
+
+        function updateProgress(id, val, max) {
+            const bar = document.getElementById(id);
+            let pct = (val / max) * 100;
+            if (pct > 100) pct = 100;
+            bar.style.width = `${pct}%`;
+            
+            bar.className = 'h-full progress-fill'; 
+            if (val >= max) {
+                bar.classList.add('bg-green-400');
+            } else if (id.includes('kira')) {
+                bar.classList.add('bg-yellow-500');
+            } else {
+                bar.classList.add('bg-cyan-500');
+            }
+        }
+
+        // リセット
+        window.resetAll = function() {
+            starGiftData.forEach((_, i) => {
+                const el = document.getElementById(`s-qty-${i}`);
+                if(el) el.value = 0;
+            });
+            calculateStarTotal();
+
+            pointGiftData.forEach((_, i) => {
+                const el = document.getElementById(`p-qty-${i}`);
+                if(el) el.value = 0;
+            });
+            calculatePointGiftTotal();
+        };
+
+        function updateText(id, val) {
+            const el = document.getElementById(id);
+            if(el) {
+                el.textContent = val.toLocaleString();
+                el.classList.remove('pop');
+                void el.offsetWidth;
+                el.classList.add('pop');
+            }
+        }
+
+        // --- Tab 3: 箱開け ---
+        function renderBoxList() {
+            const container = document.getElementById('box-list');
+            container.innerHTML = '';
+            boxTargets.forEach((item) => {
+                const row = document.createElement('div');
+                row.className = "glass-card p-3 rounded-lg flex items-center justify-between";
+                row.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-300">${item.id}</div>
+                        <div class="text-sm font-bold text-slate-200">${item.target.toLocaleString()}</div>
+                    </div>
+                    <div class="text-right">
+                         <div class="text-[9px] text-slate-400 mb-0.5">1人当たりのポイント数</div>
+                         <div class="flex flex-col items-end">
+                             <div class="text-lg font-bold text-cyan-300 leading-none mb-1" id="box-result-pt-${item.id}">0</div>
+                             <div class="flex items-center text-xs text-yellow-200/80 bg-slate-900/40 px-1.5 py-0.5 rounded border border-yellow-500/10"><i class="fa-solid fa-star text-[9px] mr-1 text-yellow-500"></i><span id="box-result-kira-${item.id}">0</span></div>
+                         </div>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+            calculateBox();
         }
 
         function initParticipants() {
@@ -297,144 +600,6 @@
                 option.style.backgroundColor = '#1e293b';
                 participantSelect.appendChild(option);
             }
-        }
-
-        function setupTouchPrevention() {
-            let lastTouchEnd = 0;
-            document.addEventListener('touchend', function (event) {
-                const now = (new Date()).getTime();
-                if (now - lastTouchEnd <= 300) {
-                    event.preventDefault();
-                }
-                lastTouchEnd = now;
-            }, false);
-
-            document.addEventListener('touchstart', function(event) {
-                if (event.touches.length > 1) {
-                    event.preventDefault();
-                }
-            }, { passive: false });
-
-            document.addEventListener('touchmove', function(event) {
-                if (event.touches.length > 1) {
-                    event.preventDefault();
-                }
-            }, { passive: false });
-        }
-
-        window.switchTab = function(tabName) {
-            const giftTab = document.getElementById('tab-gift');
-            const boxTab = document.getElementById('tab-box');
-            const giftBtn = document.getElementById('btn-gift');
-            const boxBtn = document.getElementById('btn-box');
-
-            if (tabName === 'gift') {
-                giftTab.classList.remove('hidden');
-                boxTab.classList.add('hidden');
-                giftBtn.classList.add('active');
-                boxBtn.classList.remove('active');
-                resetBtnWrapper.style.visibility = 'visible';
-            } else {
-                giftTab.classList.add('hidden');
-                boxTab.classList.remove('hidden');
-                giftBtn.classList.remove('active');
-                boxBtn.classList.add('active');
-                resetBtnWrapper.style.visibility = 'hidden';
-            }
-        };
-
-        function renderItems() {
-            itemListContainer.innerHTML = '';
-            itemsData.forEach((item, index) => {
-                const row = document.createElement('div');
-                row.className = "glass-card p-3 rounded-xl flex items-center justify-between gap-3 relative group active:bg-slate-800/80 transition-colors";
-                row.innerHTML = `
-                    <div class="flex-1 min-w-0">
-                        <div class="font-bold text-slate-200 text-sm mb-1.5 truncate">${item.name}</div>
-                        <div class="flex items-center gap-3 text-xs text-slate-400 leading-none">
-                            <div class="flex items-center"><i class="fa-solid fa-star text-yellow-500/80 mr-1 text-[10px]"></i><span>${item.kira.toLocaleString()}</span></div>
-                            <div class="w-px h-3 bg-slate-700/50"></div>
-                            <div class="flex items-center"><span class="text-cyan-500/80 font-bold mr-1 text-[10px]">PT</span><span>${item.points.toLocaleString()}</span></div>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between bg-slate-900/40 rounded-lg p-1 border border-slate-700/30 w-28 shrink-0">
-                        <button onclick="changeQuantity(${index}, -1)" class="w-8 h-8 rounded text-slate-400 hover:text-white hover:bg-slate-700 flex items-center justify-center active:scale-90 transition-transform"><i class="fa-solid fa-minus text-xs"></i></button>
-                        <input type="number" id="qty-${index}" value="0" min="0" max="999" class="flex-1 text-center font-bold text-base text-slate-100 bg-transparent focus:outline-none focus:text-cyan-300 p-0" oninput="calculateTotal()" onclick="this.select()">
-                        <button onclick="changeQuantity(${index}, 1)" class="w-8 h-8 rounded bg-slate-700/50 text-slate-200 hover:bg-slate-600 hover:text-white flex items-center justify-center active:scale-90 transition-transform border border-slate-600/50"><i class="fa-solid fa-plus text-xs"></i></button>
-                    </div>
-                `;
-                itemListContainer.appendChild(row);
-            });
-        }
-
-        window.changeQuantity = function(index, change) {
-            const input = document.getElementById(`qty-${index}`);
-            let val = parseInt(input.value) || 0;
-            val += change;
-            if (val < 0) val = 0;
-            input.value = val;
-            calculateTotal();
-            input.classList.remove('pop');
-            void input.offsetWidth;
-            if(change > 0) input.classList.add('pop');
-        };
-
-        window.calculateTotal = function() {
-            let totalKira = 0;
-            let totalPoints = 0;
-            itemsData.forEach((item, index) => {
-                const input = document.getElementById(`qty-${index}`);
-                const qty = parseInt(input.value) || 0;
-                totalKira += item.kira * qty;
-                totalPoints += item.points * qty;
-            });
-            totalKiraEl.textContent = totalKira.toLocaleString();
-            totalPointsEl.textContent = totalPoints.toLocaleString();
-            
-            totalKiraEl.classList.remove('pop');
-            totalPointsEl.classList.remove('pop');
-            void totalKiraEl.offsetWidth;
-            totalKiraEl.classList.add('pop');
-            totalPointsEl.classList.add('pop');
-        };
-
-        window.resetAll = function() {
-            itemsData.forEach((_, index) => {
-                document.getElementById(`qty-${index}`).value = 0;
-            });
-            calculateTotal();
-        }
-
-        function renderBoxList() {
-            boxListContainer.innerHTML = '';
-            boxTargets.forEach((item) => {
-                const row = document.createElement('div');
-                row.className = "glass-card p-3 rounded-lg flex items-center justify-between";
-                row.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-300">
-                            ${item.id}
-                        </div>
-                        <div class="text-sm font-bold text-slate-200">
-                            ${item.target.toLocaleString()}
-                        </div>
-                    </div>
-                    <div class="text-right">
-                         <div class="text-[9px] text-slate-400 mb-0.5">1人当たりのポイント数</div>
-                         <div class="flex flex-col items-end">
-                             <div class="text-lg font-bold text-cyan-300 leading-none mb-1" id="box-result-pt-${item.id}">
-                                0
-                             </div>
-                             <div class="flex items-center text-xs text-yellow-200/80 bg-slate-900/40 px-1.5 py-0.5 rounded border border-yellow-500/10">
-                                <i class="fa-solid fa-star text-[9px] mr-1 text-yellow-500"></i>
-                                <span id="box-result-kira-${item.id}">0</span>
-                             </div>
-                         </div>
-                    </div>
-                `;
-                boxListContainer.appendChild(row);
-            });
-            calculateBox();
         }
 
         window.calculateBox = function() {
@@ -463,6 +628,21 @@
                     kiraContainer.classList.remove('hidden');
                 }
             });
+        }
+
+        function setupTouchPrevention() {
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function (event) {
+                const now = (new Date()).getTime();
+                if (now - lastTouchEnd <= 300) event.preventDefault();
+                lastTouchEnd = now;
+            }, false);
+            document.addEventListener('touchstart', function(event) {
+                if (event.touches.length > 1) event.preventDefault();
+            }, { passive: false });
+            document.addEventListener('touchmove', function(event) {
+                if (event.touches.length > 1) event.preventDefault();
+            }, { passive: false });
         }
 
         init();
